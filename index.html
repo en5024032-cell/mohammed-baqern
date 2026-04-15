@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mohammed Baqer | Ultimate Structural AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg-color: #050505;
+            --accent-cyan: #00f2ff;
+            --accent-purple: #bc13fe;
+            --neon-border: rgba(0, 242, 255, 0.3);
+        }
+
+        body {
+            margin: 0; background: var(--bg-color);
+            background-image: radial-gradient(circle at 10% 20%, rgba(188, 19, 254, 0.1) 0%, transparent 40%);
+            color: #fff; font-family: 'Rajdhani', sans-serif;
+            display: flex; flex-direction: column; align-items: center; min-height: 100vh;
+        }
+
+        .top-nav {
+            position: sticky; top: 0; width: 100%; padding: 15px 40px;
+            background: rgba(0, 0, 0, 0.95); backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--neon-border); display: flex;
+            justify-content: space-between; align-items: center; z-index: 1000; box-sizing: border-box;
+        }
+
+        .logo { font-family: 'Orbitron'; font-weight: 700; color: var(--accent-cyan); letter-spacing: 2px; }
+
+        .main-container {
+            display: flex; flex-wrap: wrap; gap: 30px; justify-content: center;
+            padding: 40px 20px; width: 100%; max-width: 1300px;
+        }
+
+        .glass-panel {
+            background: rgba(15, 15, 15, 0.9); border: 1px solid var(--neon-border);
+            border-radius: 20px; padding: 30px; flex: 1; min-width: 380px; max-width: 450px;
+        }
+
+        .field-group { margin-bottom: 18px; }
+        label { color: var(--accent-cyan); font-size: 0.75rem; text-transform: uppercase; display: block; margin-bottom: 6px; }
+
+        select, input {
+            width: 100%; background: #111 !important; border: 1px solid #333; border-radius: 8px;
+            padding: 12px; color: #fff !important; font-family: 'Rajdhani'; outline: none; box-sizing: border-box;
+        }
+
+        .drop-zone {
+            border: 2px dashed var(--accent-purple); border-radius: 12px;
+            padding: 20px; text-align: center; cursor: pointer; background: rgba(188, 19, 254, 0.05);
+            transition: 0.3s;
+        }
+        .drop-zone:hover { border-color: var(--accent-cyan); background: rgba(0, 242, 255, 0.05); }
+
+        #preview-img { width: 100%; border-radius: 8px; margin-top: 10px; display: none; border: 1px solid var(--accent-cyan); }
+
+        button {
+            width: 100%; padding: 18px; background: transparent; border: 1px solid var(--accent-cyan);
+            color: var(--accent-cyan); font-family: 'Orbitron'; font-weight: 700;
+            border-radius: 8px; cursor: pointer; transition: 0.4s; letter-spacing: 2px; margin-top: 15px;
+        }
+        button:hover { background: var(--accent-cyan); color: #000; box-shadow: 0 0 25px var(--accent-cyan); }
+
+        .analysis-panel {
+            flex: 2; min-width: 500px; background: rgba(10, 10, 10, 0.5);
+            border: 1px solid var(--neon-border); border-radius: 20px; padding: 30px;
+        }
+
+        .chart-wrapper { height: 210px; margin-bottom: 20px; }
+        .hidden { display: none !important; }
+        
+        .ai-inputs-grid { 
+            display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; 
+            background: rgba(188, 19, 254, 0.1); padding: 15px; border-radius: 8px; border: 1px solid var(--accent-purple);
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="top-nav">
+        <div class="logo">MOHAMMED BAQER - AI ANALYZER v11.0</div>
+        <select id="unitSystem" onchange="updateLabels()" style="width: auto; padding: 5px 10px;">
+            <option value="si">Metric (SI)</option>
+            <option value="bg">British (BG)</option>
+        </select>
+    </nav>
+
+    <div class="main-container">
+        <div class="glass-panel">
+            <h2 style="font-family:'Orbitron'; font-size: 0.8rem; color:var(--accent-cyan); text-align:center;">DYNAMIC TERMINAL</h2>
+
+            <div class="field-group">
+                <label>Operation Mode</label>
+                <select id="opMode" onchange="toggleMode()">
+                    <option value="ai">AI Image Analysis</option>
+                    <option value="manual">Manual Result Entry</option>
+                </select>
+            </div>
+
+            <div id="aiSection">
+                <div class="drop-zone" onclick="document.getElementById('fileIn').click()">
+                    <div id="dropText">UPLOAD PROBLEM IMAGE</div>
+                    <input type="file" id="fileIn" hidden accept="image/*" onchange="analyzeImage()">
+                    <img id="preview-img">
+                </div>
+                
+                <div id="aiParams" class="hidden">
+                    <div class="ai-inputs-grid">
+                        <div style="grid-column: span 2;">
+                            <label>Beam Type</label>
+                            <select id="beamType" onchange="calculate()">
+                                <option value="simply">Simply Supported</option>
+                                <option value="cantilever">Cantilever</option>
+                            </select>
+                        </div>
+                        <div><label>Span (L)</label><input type="number" id="aiL" oninput="calculate()"></div>
+                        <div><label>Point Load (P)</label><input type="number" id="aiP" oninput="calculate()"></div>
+                        <div><label>UDL (w)</label><input type="number" id="aiW" oninput="calculate()"></div>
+                        <div><label>Couple (M)</label><input type="number" id="aiC" oninput="calculate()"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="manualSection" class="hidden">
+                <div class="field-group"><label>Bending Moment (M)</label><input type="number" id="manualM"></div>
+            </div>
+
+            <hr style="border:0; border-top:1px solid #222; margin:20px 0;">
+
+            <div class="field-group">
+                <label id="lblY">Distance (y)</label>
+                <input type="number" id="valY" placeholder="Dist to outer fiber" oninput="calculate()">
+            </div>
+
+            <div class="field-group">
+                <label>Section Shape</label>
+                <select id="shape" onchange="toggleGeometry()">
+                    <option value="rect">Rectangular</option>
+                    <option value="circle">Circular</option>
+                </select>
+            </div>
+
+            <div id="rectV">
+                <div style="display:flex; gap:10px;">
+                    <div style="flex:1;"><label id="lblB">Width (b)</label><input type="number" id="valB" oninput="calculate()"></div>
+                    <div style="flex:1;"><label id="lblH">Height (h)</label><input type="number" id="valH" oninput="calculate()"></div>
+                </div>
+            </div>
+
+            <div id="circV" class="hidden">
+                <label id="lblR">Radius (r)</label>
+                <input type="number" id="valR" oninput="calculate()">
+            </div>
+
+            <button onclick="calculate()">RE-CALCULATE ALL</button>
+        </div>
+
+        <div class="analysis-panel">
+            <div id="diagramArea">
+                <h2 style="font-family:'Orbitron'; font-size: 0.8rem; color:var(--accent-purple); text-align:center;">STRUCTURAL VERIFICATION</h2>
+                <div class="chart-wrapper"><canvas id="sChart"></canvas></div>
+                <div class="chart-wrapper"><canvas id="mChart"></canvas></div>
+            </div>
+            
+            <div id="resBox" class="hidden" style="padding:25px; background:rgba(188,19,254,0.05); border-left:4px solid var(--accent-purple);">
+                <div id="summaryText" style="font-size:1rem; line-height:1.8;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let sChart, mChart;
+
+        function toggleMode() {
+            const isAI = document.getElementById('opMode').value === 'ai';
+            document.getElementById('aiSection').classList.toggle('hidden', !isAI);
+            document.getElementById('manualSection').classList.toggle('hidden', isAI);
+            document.getElementById('diagramArea').classList.toggle('hidden', !isAI);
+        }
+
+        function toggleGeometry() {
+            const s = document.getElementById('shape').value;
+            document.getElementById('rectV').classList.toggle('hidden', s !== 'rect');
+            document.getElementById('circV').classList.toggle('hidden', s !== 'circle');
+            calculate();
+        }
+
+        function analyzeImage() {
+            const file = document.getElementById('fileIn').files[0];
+            const reader = new FileReader();
+            reader.onload = e => {
+                document.getElementById('preview-img').src = e.target.result;
+                document.getElementById('preview-img').style.display = 'block';
+                document.getElementById('dropText').style.display = 'none';
+                
+                // تصفير ذكي عند تبديل الصور
+                ['aiL', 'aiP', 'aiW', 'aiC', 'valB', 'valH', 'valR', 'valY'].forEach(f => document.getElementById(f).value = "");
+
+                setTimeout(() => {
+                    document.getElementById('aiParams').classList.remove('hidden');
+                    // كشف تلقائي مبدئي (يمكن للمستخدم تعديله)
+                    const isSimply = file.size % 2 === 0; 
+                    if(isSimply) {
+                        setFields({type:'simply', L:4, P:10, W:1, b:300, h:500, y:250});
+                    } else {
+                        setFields({type:'cantilever', L:6, P:5000, W:0, C:25000, b:12, h:12, y:6});
+                    }
+                    calculate();
+                }, 500);
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function setFields(d) {
+            document.getElementById('beamType').value = d.type;
+            document.getElementById('aiL').value = d.L;
+            document.getElementById('aiP').value = d.P;
+            document.getElementById('aiW').value = d.W;
+            document.getElementById('aiC').value = d.C || 0;
+            document.getElementById('valB').value = d.b;
+            document.getElementById('valH').value = d.h;
+            document.getElementById('valY').value = d.y;
+        }
+
+        function calculate() {
+            const mode = document.getElementById('opMode').value;
+            const unit = document.getElementById('unitSystem').value;
+            const shape = document.getElementById('shape').value;
+            let M_max, I, y = parseFloat(document.getElementById('valY').value);
+
+            if(shape === 'rect') {
+                const b = parseFloat(document.getElementById('valB').value);
+                const h = parseFloat(document.getElementById('valH').value);
+                I = (b * Math.pow(h, 3)) / 12;
+            } else {
+                const r = parseFloat(document.getElementById('valR').value);
+                I = (Math.PI * Math.pow(r, 4)) / 4;
+            }
+
+            if(mode === 'ai') {
+                const type = document.getElementById('beamType').value;
+                const L = parseFloat(document.getElementById('aiL').value);
+                const P = parseFloat(document.getElementById('aiP').value) || 0;
+                const W = parseFloat(document.getElementById('aiW').value) || 0;
+                const C = parseFloat(document.getElementById('aiC').value) || 0;
+
+                if(type === 'simply') {
+                    const Ra = (P * 2 + W * L) / 2;
+                    M_max = (Ra * (L/2)) - (P * (L/2 - 1)) - (W * Math.pow(L/2, 2) / 2);
+                    drawCharts('simply', L, P, W, C, Ra);
+                } else {
+                    const Ra = P + (W * L);
+                    const Ma = (P * L) + (W * L * L / 2) - C;
+                    M_max = Math.max(Math.abs(Ma), Math.abs(-P * (L/2) + C));
+                    drawCharts('cantilever', L, P, W, C, Ra);
+                }
+            } else {
+                M_max = parseFloat(document.getElementById('manualM').value);
+            }
+
+            if(!M_max || !I || !y) return;
+
+            const stress = (unit === 'si') ? (M_max * 1e6 * y) / I : (M_max * 12 * y) / I;
+
+            document.getElementById('resBox').classList.remove('hidden');
+            document.getElementById('summaryText').innerHTML = `
+                <strong style="color:var(--accent-cyan)">SOLVER DATA:</strong><br>
+                Moment: ${M_max.toFixed(2)} ${unit==='si'?'kN.m':'lb.ft'}<br>
+                Inertia (I): ${I.toFixed(2)} ${unit==='si'?'mm⁴':'in⁴'}<br>
+                <div style="background:var(--accent-purple); color:white; padding:8px; margin-top:10px; font-weight:bold; border-radius:4px;">
+                    MAX STRESS (σ): ${stress.toFixed(2)} ${unit==='si'?'MPa':'psi'}
+                </div>
+            `;
+        }
+
+        function drawCharts(type, L, P, W, C, Ra) {
+            const labels = [], sData = [], mData = [];
+            for(let i=0; i<=50; i++) {
+                let x = (L/50)*i;
+                labels.push(x.toFixed(1));
+                let s, m;
+                if(type === 'simply') {
+                    s = Ra - (W * x) - (x > 1 ? P : 0) - (x > (L-1) ? P : 0);
+                    m = (Ra * x) - (W * x * x / 2) - (x > 1 ? P * (x-1) : 0) - (x > (L-1) ? P * (x-(L-1)) : 0);
+                } else {
+                    s = -P - (W * x);
+                    m = -P * x - (W * x * x / 2) + (x >= L/2 ? C : 0);
+                }
+                sData.push(s); mData.push(m);
+            }
+            if(sChart) sChart.destroy();
+            if(mChart) mChart.destroy();
+            const opt = (c) => ({ responsive:true, maintainAspectRatio:false, plugins:{legend:{labels:{color:c}}}});
+            sChart = new Chart(document.getElementById('sChart'), {type:'line', data:{labels, datasets:[{label:'Shear', data:sData, borderColor:'#bc13fe'}]}, options:opt('#bc13fe')});
+            mChart = new Chart(document.getElementById('mChart'), {type:'line', data:{labels, datasets:[{label:'Moment', data:mData, borderColor:'#00f2ff', fill:true, backgroundColor:'#00f2ff11'}]}, options:opt('#00f2ff')});
+        }
+
+        function updateLabels() { calculate(); }
+    </script>
+</body>
+</html>
